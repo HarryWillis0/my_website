@@ -1,6 +1,37 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-const container = document.getElementById("app-root")!;
+import { Layout } from "./components/layout";
+import { HomePage, ArticlesPage, AboutPage, ErrorPage } from "./pages";
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Layout />,
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                index: true,
+                element: <HomePage />,
+            },
+            {
+                path: "about",
+                element: <AboutPage />,
+            },
+            {
+                path: "articles",
+                element: <ArticlesPage />,
+            },
+        ],
+    },
+]);
+
+const container = document.getElementById("root")!;
 const root = createRoot(container);
-root.render(<h1>Hello World!</h1>);
+
+root.render(
+    <React.StrictMode>
+        <RouterProvider router={router} />
+    </React.StrictMode>
+);
