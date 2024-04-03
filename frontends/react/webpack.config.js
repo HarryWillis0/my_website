@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const prod = process.env.NODE_ENV === "production";
 
-const serverDists = ["node"];
+const serverDists = ["node", "go"];
 
 const webpackConfigs = serverDists.map((dist) => {
     return {
