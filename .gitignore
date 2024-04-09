@@ -6,6 +6,7 @@ dist/
 
 # Config files
 .env
+.DS_Store
 
 # VSCode 
 .vscode/
