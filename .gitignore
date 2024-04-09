@@ -3,3 +3,9 @@ node_modules/
 
 # Build directories
 dist/
+
+# Config files
+.env
+
+# VSCode 
+.vscode/
