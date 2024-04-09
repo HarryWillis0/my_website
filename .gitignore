@@ -3,3 +3,10 @@ node_modules/
 
 # Build directories
 dist/
+
+# Config files
+.env
+.DS_Store
+
+# VSCode 
+.vscode/

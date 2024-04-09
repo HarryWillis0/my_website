@@ -9,16 +9,17 @@ import (
 
 // build the path to dist/index.html
 func getIndexFilePath() (string, error) {
-	cwd, err := filepath.Abs(".")
+	dir, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 
-	indexFilePath := filepath.Join(cwd, "/dist/index.html")
+	absolutePath := filepath.Join(dir, "dist", "index.html")
 
-	return indexFilePath, nil
+	return absolutePath, nil
 }
 
+// check if a file exists by its path
 func checkFileExists(filePath string) error {
 	_, err := os.Stat(filePath)
 	return err
@@ -54,8 +55,17 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// get the port from the environment variable, defaulting to 3000 if not set
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
 	http.HandleFunc("/", requestHandler)
 
-	log.Println("Server is running on http://localhost:3000")
-	http.ListenAndServe(":3000", nil)
+	log.Println("Server is listening on " + port)
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
