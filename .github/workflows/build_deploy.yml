@@ -11,7 +11,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: Prod
-    
+
     steps:
       - name: 'Checkout Repo'
         uses: actions/checkout@v3
@@ -34,8 +34,8 @@ jobs:
         uses: 'google-GitHub-actions/auth@v1'
         with:
           token_format: 'access-token'
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: '${{ secrets.SERVICE_ACCOUNT_EMAIL }}'
 
       - name: 'Authenticate Docker with GCloud token'
         id: docker-auth
