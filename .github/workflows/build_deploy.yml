@@ -1,0 +1,73 @@
+name: 'Build and Deploy'
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 'Checkout Repo'
+        uses: actions/checkout@v3
+
+      - name: 'Setup Node.js environment'
+        uses: actions/setup-node@v2
+        with:
+          node-version: '21'
+
+      - name: 'Install frontend dependencies'
+        working-directory: ./frontends/${{ vars.DIST_FRONTEND }}
+        run: npm install
+
+      - name: 'Build frontend'
+        working-directory: ./frontends/${{ vars.DIST_FRONTEND }}
+        run: npm run build-${{ vars.DIST_SERVER }}
+
+      - name: 'Authenticate to Google Cloud'
+        id: 'auth'
+        uses: 'google-GitHub-actions/auth@v1'
+        with:
+          token_format: 'access-token'
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+
+      - name: 'Authenticate Docker with GCloud token'
+        id: docker-auth
+        uses: 'docker/login-action@v1'
+        with:
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+          registry: '${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev'
+
+      - name: 'Build, tag and push container'
+        id: build-image
+        uses: docker/build-push-action@v3
+        with:
+          context: './backends/servers/${{ vars.DIST_SERVER }}'
+          push: true 
+          tags: |
+            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ inputs.ref }}
+
+      - name: 'Create Service declaration'  
+        run: |-
+          export CONTAINER_IMAGE="${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ inputs.ref }}"
+          export SERVICE_NAME="${{ vars.SERVICE_NAME }}"
+          export PROJECT_ID="${{ vars.GCP_PROJECT_ID }}"
+          export REVISION_TAG="${{ inputs.ref }}"
+          export CLOUD_RUN_SA="${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
+          envsubst < ./service-yaml/container.yaml > container-${{ inputs.environment }}.yaml
+          cat container-${{ inputs.environment }}.yaml
+
+      - name: 'Deploy to Cloud Run'
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ vars.service_name }}
+          region: ${{ vars.ARTIFACT_REGISTRY_REGION }}
+          metadata: container-${{ inputs.environment }}.yaml
