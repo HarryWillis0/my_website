@@ -9,15 +9,14 @@ on:
 
 jobs:
   build-and-deploy:
+    permissions:
+      id-token: write
+      contents: read
+      
     runs-on: ubuntu-latest
     environment: Prod
 
     steps:
-      - name: Debug Secrets
-        run: |
-          echo "WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
-          echo "SERVICE_ACCOUNT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
-
       - name: 'Checkout Repo'
         uses: actions/checkout@v3
 
