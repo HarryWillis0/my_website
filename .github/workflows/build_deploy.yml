@@ -12,7 +12,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      
+
     runs-on: ubuntu-latest
     environment: Prod
 
@@ -37,7 +37,7 @@ jobs:
         id: 'auth'
         uses: 'google-GitHub-actions/auth@v1'
         with:
-          token_format: 'access-token'
+          token_format: 'id_token'
           workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
           service_account: '${{ secrets.SERVICE_ACCOUNT_EMAIL }}'
 
