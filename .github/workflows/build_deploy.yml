@@ -14,7 +14,7 @@ jobs:
       contents: read
 
     runs-on: ubuntu-latest
-    environment: Prod
+    environment: prod
 
     steps:
       - name: 'Checkout Repo'
@@ -56,14 +56,14 @@ jobs:
           context: './backends/servers/${{ vars.DIST_SERVER }}'
           push: true 
           tags: |
-            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ inputs.ref }}
+            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}
 
       - name: 'Create Service declaration'  
         run: |-
-          export CONTAINER_IMAGE="${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ inputs.ref }}"
+          export CONTAINER_IMAGE="${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}"
           export SERVICE_NAME="${{ vars.SERVICE_NAME }}"
           export PROJECT_ID="${{ vars.GCP_PROJECT_ID }}"
-          export REVISION_TAG="${{ inputs.ref }}"
+          export REVISION_TAG="${{ github.sha }}"
           export CLOUD_RUN_SA="${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
           export ENVIRONMENT="${{ inputs.environment }}"
           envsubst < ./service-yaml/container.yaml > container-${{ inputs.environment }}.yaml
