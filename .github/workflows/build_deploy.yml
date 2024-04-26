@@ -66,7 +66,7 @@ jobs:
           export REVISION_TAG="${{ github.sha }}"
           export CLOUD_RUN_SA="${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
           export ENVIRONMENT="${{ inputs.environment }}"
-          envsubst < ./service-yaml/container.yaml > container-${{ inputs.environment }}.yaml
+          envsubst < ./service.template.yaml > container-${{ inputs.environment }}.yaml
           cat container-${{ inputs.environment }}.yaml
 
       - name: 'Deploy to Cloud Run'
