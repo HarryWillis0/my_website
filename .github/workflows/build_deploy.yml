@@ -14,7 +14,7 @@ jobs:
       contents: read
 
     runs-on: ubuntu-latest
-    environment: prod
+    environment: ${{ vars.ENV_NAME }}
 
     steps:
       - name: 'Checkout Repo'
@@ -58,21 +58,10 @@ jobs:
           tags: |
             ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}
 
-      - name: 'Create Service declaration'  
-        run: |-
-          export CONTAINER_IMAGE="${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}"
-          export SERVICE_NAME="${{ vars.SERVICE_NAME }}"
-          export PROJECT_ID="${{ vars.GCP_PROJECT_ID }}"
-          export REVISION_TAG="${{ github.sha }}"
-          export CLOUD_RUN_SA="${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
-          export ENVIRONMENT="${{ inputs.environment }}"
-          envsubst < ./service.template.yaml > container-${{ inputs.environment }}.yaml
-          cat container-${{ inputs.environment }}.yaml
-
       - name: 'Deploy to Cloud Run'
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v0
         with:
-          service: ${{ vars.service_name }}
+          service: ${{ vars.SERVICE_NAME }}
           region: ${{ vars.ARTIFACT_REGISTRY_REGION }}
-          metadata: container-${{ inputs.environment }}.yaml
+          image: ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}
