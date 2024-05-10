@@ -10,3 +10,6 @@ dist/
 
 # VSCode 
 .vscode/
+
+# Test directories
+coverage/
