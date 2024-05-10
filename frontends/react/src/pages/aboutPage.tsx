@@ -2,9 +2,9 @@ import React from "react";
 
 import { Footer } from "../components/footer";
 
-export const AboutPage: React.FC = (props) => {
+export const AboutPage: React.FC = () => {
     return (
-        <div className="flex flex-col w-3/4">
+        <div className="flex flex-col w-3/4" data-testid="about-page" aria-label="About Page">
             <p className="text-3xl mb-5">Hi, I'm Harry!</p>
             <p className="text-1xl mb-5">
                 I am a full stack developer located in Calgary, AB. Outside of work

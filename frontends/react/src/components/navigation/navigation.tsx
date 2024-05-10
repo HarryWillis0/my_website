@@ -1,10 +1,8 @@
 import React from "react";
 
-import { NavigationButton } from "./navigationButton";
+import { NavigationButton } from ".";
 
-export interface INavigationProps{}
-
-export const Navigation: React.FC<INavigationProps> = () => {
+export const Navigation: React.FC = () => {
     return (
         <div id="nav" className="flex flex-row justify-center mb-10">
             <NavigationButton href="/" label="HOME" />
@@ -12,4 +10,4 @@ export const Navigation: React.FC<INavigationProps> = () => {
             <NavigationButton href="/articles" label="ARTICLES" />
         </div>
     );
-}
+};

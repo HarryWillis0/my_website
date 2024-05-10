@@ -10,6 +10,7 @@ export const Footer: React.FC = (props) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="icon-button text-4xl mx-5"
+                aria-label="github"
             >
                 <i className="fa-brands fa-github"></i>
             </a>
@@ -18,6 +19,7 @@ export const Footer: React.FC = (props) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="icon-button text-4xl mx-5"
+                aria-label="strava"
             >
                 <i className="fab fa-strava" />
             </a>
