@@ -1,29 +1,27 @@
-# my_website (work in progress)
+# my_website [![Build and Deploy](https://github.com/HarryWillis0/my_website/actions/workflows/build_deploy.yml/badge.svg)](https://github.com/HarryWillis0/my_website/actions/workflows/build_deploy.yml)
 
 ## Overview
 
-This is a personal project where I will implement app basics with new languages and frameworks I want to learn. I plan to have multiple iterations of the site using different frameworks, languages, databases, etc.
+This is a personal project where I implement app basics with new languages and frameworks I want to learn.
 
 ## Project struture
 
-/frontends/
+```
+my_website/
+│
+├── frontends/
+│   └── react/
+│
+└── backends/
+    └── servers/
+    │   ├── go/
+    │    └── node/
+    │
+    └── apis/
+```
 
--   contains all code pertaining to UI
--   each subfolder will be a specific implementation using a certain UI framework
-    -   ex. /frontends/react contains the React implementation
+### Directory Notes
 
-/backends/
+**Frontend Directories**: Each frontends directory contains the implementation of the website in a specific language and framework.
 
--   contains all code pertaining to APIs and servers
-
-/backends/servers
-
--   contains the server that will serve the UI
--   each subfolder will be a specific implementaion using a certain language
-    -   ex. /backends/servers/node contains the Node.js implementation of the server
-
-/backends/apis
-
--   contains the API code for interacting with a database
--   each subfolder will be a specific implementation of the same API for a certain language/framework
-    -   ex. /backends/apis/go contains the Go implementation of the API
+**Backend Directories**: Each backends servers directory contains the implementation of the website server in a specific language and framework. Each backends api directory contains the implementation of the API the website uses.
