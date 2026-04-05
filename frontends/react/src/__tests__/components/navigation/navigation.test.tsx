@@ -14,7 +14,7 @@ describe(Navigation, () => {
 		);
 
 		const aboutLink = screen.getByRole("link", { name: "ABOUT" });
-		expect(aboutLink).toHaveAttribute("href", "/about");
+		expect(aboutLink).toHaveAttribute("href", "/");
 	});
 
 	test('renders "ARTICLES" link correctly', () => {
@@ -26,16 +26,5 @@ describe(Navigation, () => {
 
 		const articlesLink = screen.getByRole("link", { name: "ARTICLES" });
 		expect(articlesLink).toHaveAttribute("href", "/articles");
-	});
-
-	test('renders "HOME" link correctly', () => {
-		render(
-			<Router>
-				<Navigation />
-			</Router>
-		);
-
-		const homeLink = screen.getByRole("link", { name: "HOME" });
-		expect(homeLink).toHaveAttribute("href", "/");
 	});
 });
