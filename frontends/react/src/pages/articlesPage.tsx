@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { IArticle } from "../types";
-import { FileArticleService, type IArticleService } from "../services";
-import { ArticleList } from "../components/article/articleList";
+import { IArticle } from "src/types";
+import { FileArticleService, type IArticleService } from "src/services";
+import { ArticleList } from "src/components/article/articleList";
 
 export const ArticlesPage: React.FC = () => {
 	const [articles, setArticles] = React.useState<IArticle[]>([]);

@@ -2,8 +2,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { IArticle } from "../../../types";
-import { ArticleListItem } from "../../../components/article/articleListItem";
+import { IArticle } from "src/types";
+import { ArticleListItem } from "src/components/article/articleListItem";
 
 jest.mock("react-router-dom", () => ({
 	Link: ({ to, children, ...props }: any) => (

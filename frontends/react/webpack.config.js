@@ -17,6 +17,11 @@ module.exports = {
 			? path.resolve(`${__dirname}/../../backends/servers/${distServer}/dist`)
 			: path.resolve(__dirname, "dist"),
 	},
+	resolve: {
+		alias: {
+			src: path.resolve(__dirname, "src"),
+		},
+	},
 	module: {
 		rules: [
 			{

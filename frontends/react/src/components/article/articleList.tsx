@@ -1,8 +1,8 @@
 import React from "react";
 
-import { IArticle } from "../../types";
-import { ArticleListItem } from "./articleListItem";
-import { Footer } from "../footer";
+import { IArticle } from "src/types";
+import { ArticleListItem } from "src/components/article/articleListItem";
+import { Footer } from "src/components/footer";
 
 interface IArticleListProps {
 	articles: IArticle[];

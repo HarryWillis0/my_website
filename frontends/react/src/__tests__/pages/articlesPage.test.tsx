@@ -3,8 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { jest } from "@jest/globals";
 
-import { ArticlesPage } from "../../pages";
-import * as FileArticleServiceModule from "../../services";
+import { ArticlesPage } from "src/pages";
+import * as FileArticleServiceModule from "src/services";
 
 jest.mock("react-router-dom", () => ({
 	useNavigate: jest.fn(),
@@ -15,12 +15,12 @@ jest.mock("react-router-dom", () => ({
 	),
 }));
 
-jest.mock("../../services", () => ({
+jest.mock("src/services", () => ({
 	FileArticleService: jest.fn(),
 }));
 
 import { useNavigate } from "react-router-dom";
-import { IArticle } from "../../types";
+import { IArticle } from "src/types";
 
 const mockNavigate = jest.mocked(useNavigate);
 const MockFileArticleService = jest.mocked(FileArticleServiceModule.FileArticleService);
