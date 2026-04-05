@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Shell } from "../components/shell";
+import { Shell } from "src/components/shell";
 
 export const ErrorPage: React.FC = () => {
 	return (

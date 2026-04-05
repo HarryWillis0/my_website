@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { IArticle } from "../../types";
+import { IArticle } from "src/types";
 
 interface IArticleItemProps {
 	article: IArticle;

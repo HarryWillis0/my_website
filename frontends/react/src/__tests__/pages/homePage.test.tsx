@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { HomePage } from "../../pages";
+import { HomePage } from "src/pages";
 
 describe(HomePage, () => {
 	test("renders image with correct attributes", () => {

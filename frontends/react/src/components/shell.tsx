@@ -1,8 +1,8 @@
 import React, { PropsWithChildren } from "react";
 
-import { Navigation } from "./navigation";
+import { Navigation } from "src/components/navigation";
 
-import "../styles/main.css";
+import "src/styles/main.css";
 
 export const Shell: React.FC<PropsWithChildren> = ({ children }) => {
 	return (

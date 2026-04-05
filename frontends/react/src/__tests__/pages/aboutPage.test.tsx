@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { AboutPage } from "../../pages";
+import { AboutPage } from "src/pages";
 
 describe(AboutPage, () => {
 	test("displays expected content", () => {

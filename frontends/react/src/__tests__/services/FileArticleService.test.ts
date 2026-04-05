@@ -2,13 +2,13 @@ import { jest } from "@jest/globals";
 
 const mockJson: { articles: any[] } = { articles: [] };
 
-jest.mock("../../data/articles.json", () => mockJson);
-jest.mock("../../utils/mapDtoToArticle", () => ({
+jest.mock("src/data/articles.json", () => mockJson);
+jest.mock("src/utils/mapDtoToArticle", () => ({
 	mapDtoToArticle: jest.fn(),
 }));
 
-import { FileArticleService } from "../../services/FileArticleService";
-import { mapDtoToArticle } from "../../utils/mapDtoToArticle";
+import { FileArticleService } from "src/services/FileArticleService";
+import { mapDtoToArticle } from "src/utils/mapDtoToArticle";
 
 const mockMap = jest.mocked(mapDtoToArticle);
 

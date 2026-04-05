@@ -1,4 +1,4 @@
-import { mapDtoToArticle } from "../../utils/mapDtoToArticle";
+import { mapDtoToArticle } from "src/utils/mapDtoToArticle";
 
 describe("mapDtoToArticle", () => {
 	it("correctly maps valid DTO to Article", () => {

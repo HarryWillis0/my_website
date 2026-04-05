@@ -3,7 +3,7 @@ import { screen, render, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 
-import { NavigationButton } from "../../../components/navigation";
+import { NavigationButton } from "src/components/navigation";
 
 jest.mock("react-router-dom", () => ({
 	...jest.requireActual("react-router-dom"),

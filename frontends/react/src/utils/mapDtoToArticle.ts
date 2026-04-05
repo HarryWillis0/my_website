@@ -1,4 +1,4 @@
-import { IArticleDto, IArticle } from "../types";
+import { IArticleDto, IArticle } from "src/types";
 
 export function mapDtoToArticle(dto: IArticleDto): IArticle {
 	const created = new Date(dto.created);
