@@ -6,12 +6,12 @@ import { Navigation } from "./navigation";
 import "../styles/main.css";
 
 export const Layout: React.FC = () => {
-    return (
-        <div className="p-8">
-            <Navigation />
-            <div className="flex flex-row justify-center h-full">
-                <Outlet />
-            </div>
-        </div>
-    );
+	return (
+		<div className="min-h-screen p-8 font-sans">
+			<Navigation />
+			<main className="max-w-2xl mx-auto mt-8">
+				<Outlet />
+			</main>
+		</div>
+	);
 };

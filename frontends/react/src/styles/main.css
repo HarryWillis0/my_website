@@ -3,6 +3,5 @@
 @tailwind utilities;
 
 body {
-    font-family: Roboto;
-    max-height: 100vh;
+	font-family: Roboto;
 }
