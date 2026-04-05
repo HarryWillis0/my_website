@@ -7,7 +7,6 @@ import { HomePage, ArticlesPage, AboutPage, ErrorPage } from "./pages";
 
 const router = createBrowserRouter([
 	{
-		path: "/",
 		element: <Layout />,
 		errorElement: <ErrorPage />,
 		children: [

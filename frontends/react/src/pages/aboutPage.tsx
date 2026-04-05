@@ -6,7 +6,7 @@ export const AboutPage: React.FC = () => {
 	return (
 		<div className="flex flex-col" data-testid="about-page" aria-label="About Page">
 			<div className="border-t border-gray-200 pt-6">
-				<h1 className="font-serif text-3xl font-semibold text-gray-900 mb-4 leading-snug">Hi, I'm Harry!</h1>
+				<h1 className="font-serif text-3xl font-semibold text-gray-900 mb-4 leading-snug">About</h1>
 				<p className="text-sm text-gray-500 leading-relaxed mb-4">
 					I am a full stack developer located in Calgary, AB. Outside of work I am usually outside, riding my
 					bicycle, skateboard or skis.

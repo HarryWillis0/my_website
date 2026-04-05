@@ -8,7 +8,7 @@ describe(AboutPage, () => {
 	test("displays expected content", () => {
 		render(<AboutPage />);
 
-		expect(screen.getByText(/Hi, I'm Harry!/i)).toBeInTheDocument();
+		expect(screen.getByText(/About/i)).toBeInTheDocument();
 		expect(screen.getByText(/full stack developer/i)).toBeInTheDocument();
 		expect(screen.getByText(/traditional territories of the peoples of Treaty 7/i)).toBeInTheDocument();
 		expect(screen.getByRole("link", { name: "github" })).toBeInTheDocument();
@@ -18,7 +18,7 @@ describe(AboutPage, () => {
 		render(<AboutPage />);
 
 		expect(screen.getByTestId("about-page")).toHaveClass("flex", "flex-col");
-		expect(screen.getByText(/Hi, I'm Harry!/i)).toHaveClass(
+		expect(screen.getByText(/About/i)).toHaveClass(
 			"font-serif",
 			"text-3xl",
 			"font-semibold",

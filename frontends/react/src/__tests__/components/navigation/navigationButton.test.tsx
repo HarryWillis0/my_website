@@ -44,7 +44,7 @@ describe(NavigationButton, () => {
 		expect(navLink).toHaveAttribute("href", href);
 	});
 
-	test('applies "active" class when URL matches NavLink "to" prop', () => {
+	test('applies active styles when URL matches NavLink "to" prop', () => {
 		const label = "HOME";
 		const href = "/home";
 
@@ -58,10 +58,10 @@ describe(NavigationButton, () => {
 
 		fireEvent.click(navLink);
 
-		expect(navLink).toHaveClass("border-b", "border-gray-800");
+		expect(navLink).toHaveClass("text-gray-900", "border-b", "border-gray-900", "pb-0.5");
 	});
 
-	test('does not apply "active" when not clicked', () => {
+	test('applies inactive styles when URL does not match NavLink "to" prop', () => {
 		const label = "ABOUT";
 		const href = "/about";
 
@@ -73,6 +73,6 @@ describe(NavigationButton, () => {
 
 		const navLink = screen.getByText(label).closest("a") as Element;
 
-		expect(navLink).not.toHaveClass("active");
+		expect(navLink).toHaveClass("text-gray-400", "hover:text-gray-900");
 	});
 });
