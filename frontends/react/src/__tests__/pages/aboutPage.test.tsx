@@ -4,6 +4,12 @@ import "@testing-library/jest-dom";
 
 import { AboutPage } from "src/pages";
 
+jest.mock("react-markdown", () => {
+	return function DummyMarkdown({ children }: { children: React.ReactNode }) {
+		return <>{children}</>;
+	};
+});
+
 describe(AboutPage, () => {
 	test("displays expected content", () => {
 		render(<AboutPage />);
