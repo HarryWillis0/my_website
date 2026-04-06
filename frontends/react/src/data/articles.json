@@ -1,12 +1,3 @@
 {
-	"articles": [
-		{
-			"id": "1",
-			"title": "My First Article",
-			"body": "This is the body of my first article.",
-			"summary": "This is a summary of my first article.",
-			"created": "2024-01-01T00:00:00Z",
-			"lastModifiedAt": "2024-01-01T00:00:00Z"
-		}
-	]
+	"articles": []
 }
