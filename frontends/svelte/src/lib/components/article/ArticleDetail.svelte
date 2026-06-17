@@ -12,6 +12,25 @@
 		});
 
 	const showUpdated = () => article.lastModifiedAt !== article.created;
+	marked.use({
+		renderer: {
+			image({ href, text }: { href: string; text: string }) {
+				return `<figure class="prose-figure"><img src="${href}" alt="${text}"><figcaption>${text}</figcaption></figure>`;
+			},
+			paragraph({ tokens }: { tokens: { type: string; href?: string; text?: string }[] }) {
+				const meaningful = tokens.filter((t) => !(t.type === 'text' && !t.text?.trim()));
+				if (!meaningful.length || !meaningful.every((t) => t.type === 'image')) return false;
+				const figures = meaningful
+					.map(
+						(t) =>
+							`<figure class="prose-figure"><img src="${t.href}" alt="${t.text}"><figcaption>${t.text}</figcaption></figure>`
+					)
+					.join('');
+				return meaningful.length > 1 ? `<div class="image-row">${figures}</div>` : figures;
+			}
+		}
+	});
+
 	const renderedBody = () => marked(article.body);
 </script>
 
