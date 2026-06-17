@@ -64,6 +64,22 @@ Data flows through a service interface (`IArticleService`) so the data source ca
 - **Types** are in `src/lib/types/`; `IArticle` is the core domain type, `api.ts` holds DTO shapes.
 - **Tailwind v4** is used for styling (configured via `@tailwindcss/vite`, no `tailwind.config` file).
 
+## Article authoring — image conventions
+
+Article bodies are Markdown stored in `src/lib/data/articles.json`. A custom `marked` renderer in `ArticleDetail.svelte` handles images:
+
+- **Single image** — wrap in its own paragraph (blank line above and below). Renders as a centred `<figure>` at 70% width with the alt text as a caption.
+- **Side-by-side images** — place on consecutive lines with no blank line between them. Renders as a flex row, each image taking equal width. Use this for natural pairs (e.g. two riders at the same spot).
+
+```markdown
+<!-- single, centred -->
+![Endless meadow track](/images/bc-epic/endless-meadow.JPG)
+
+<!-- side by side — no blank line between -->
+![Harry at the start](/images/bc-epic/harry-start.JPEG)
+![Samuel at the start](/images/bc-epic/sam-start.JPEG)
+```
+
 ## Deployment
 
 Push to `main` triggers the GitHub Actions workflow which builds the chosen frontend, packages it as a Docker container, pushes to Google Artifact Registry, and deploys to Google Cloud Run.
