@@ -16,12 +16,14 @@ func NewArticleService(filePath string) (*ArticleService, error) {
 		return nil, fmt.Errorf("reading articles file: %w", err)
 	}
 
-	var articles []Article
-	if err := json.Unmarshal(data, &articles); err != nil {
+	var articlesFile struct {
+		Articles []Article `json:"articles"`
+	}
+	if err := json.Unmarshal(data, &articlesFile); err != nil {
 		return nil, fmt.Errorf("parsing articles JSON: %w", err)
 	}
 
-	return &ArticleService{articles: articles}, nil
+	return &ArticleService{articles: articlesFile.Articles}, nil
 }
 
 func (s *ArticleService) GetAll() []Article {
