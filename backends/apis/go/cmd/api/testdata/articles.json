@@ -1,0 +1,12 @@
+{
+    "articles": [
+        {
+            "id": "test-1",
+            "title": "Test Article",
+            "summary": "A test summary.",
+            "body": "Test body content.",
+            "created": "2026-01-01",
+            "lastModifiedAt": "2026-01-01"
+        }
+    ]
+}
