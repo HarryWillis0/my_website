@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/firestore"
 	"google.golang.org/grpc/codes"
@@ -39,7 +40,7 @@ func (s *firestoreViewStore) GetViewCount(ctx context.Context, articleID string)
 	}
 	count, err := doc.DataAt("count")
 	if err != nil {
-		return 0, nil
+		return 0, fmt.Errorf("reading count field: %w", err)
 	}
 	switch v := count.(type) {
 	case int64:
@@ -47,6 +48,6 @@ func (s *firestoreViewStore) GetViewCount(ctx context.Context, articleID string)
 	case float64:
 		return int64(v), nil
 	default:
-		return 0, nil
+		return 0, fmt.Errorf("unexpected type for count field: %T", v)
 	}
 }
