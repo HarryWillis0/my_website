@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
 
+	"cloud.google.com/go/firestore"
 	"harry.willis.dev/go/articles/internal/service"
 )
 
@@ -17,11 +19,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	srv := &server{articles: svc}
+	views, err := newFirestoreViewStore(context.Background(), firestore.DetectProjectID)
+	if err != nil {
+		logger.Error("failed to create view store", "error", err)
+		os.Exit(1)
+	}
+
+	srv := &server{articles: svc, views: views}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /articles", srv.handleGetArticles)
 	mux.HandleFunc("GET /articles/{id}", srv.handleGetArticleByID)
+	mux.HandleFunc("POST /articles/{id}/views", srv.handleIncrementViewCount)
+	mux.HandleFunc("GET /articles/{id}/views", srv.handleGetViewCount)
 
 	port := os.Getenv("PORT")
 	if port == "" {
