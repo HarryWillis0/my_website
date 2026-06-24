@@ -65,3 +65,4 @@ jobs:
           service: ${{ vars.SERVICE_NAME }}
           region: ${{ vars.ARTIFACT_REGISTRY_REGION }}
           image: ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}
+          env_vars: API_URL=${{ vars.API_URL }}
