@@ -5,4 +5,5 @@
 <nav id="nav" class="mb-10 flex flex-row justify-center">
 	<NavigationButton href="/" label="ABOUT" />
 	<NavigationButton href="/articles" label="ARTICLES" />
+	<NavigationButton href="/stack" label="STACK" />
 </nav>
