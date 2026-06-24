@@ -7,14 +7,14 @@
 </script>
 
 {#if articles.length === 0}
-	<div class="border-t border-gray-200 pt-6" aria-label="Article List">
+	<section class="border-t border-gray-200 pt-6" aria-label="Article List">
 		<p class="font-serif text-sm text-gray-400 italic">No articles yet — check back soon.</p>
-	</div>
+	</section>
 {:else}
-	<div class="flex flex-col border-t border-gray-200" aria-label="Article List">
+	<section class="flex flex-col border-t border-gray-200" aria-label="Article List">
 		{#each articles as article, index (article.id)}
 			<ArticleListItem {article} {index} />
 		{/each}
-	</div>
+	</section>
 {/if}
 <Footer />
