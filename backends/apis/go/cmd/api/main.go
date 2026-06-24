@@ -10,6 +10,13 @@ import (
 	"harry.willis.dev/go/articles/internal/service"
 )
 
+func registerRoutes(mux *http.ServeMux, srv *server) {
+	mux.HandleFunc("GET /articles", srv.handleGetArticles)
+	mux.HandleFunc("GET /articles/{id}", srv.handleGetArticleByID)
+	mux.HandleFunc("POST /articles/{id}/views", srv.handleIncrementViewCount)
+	mux.HandleFunc("GET /articles/{id}/views", srv.handleGetViewCount)
+}
+
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
@@ -28,10 +35,7 @@ func main() {
 	srv := &server{articles: svc, views: views}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /articles", srv.handleGetArticles)
-	mux.HandleFunc("GET /articles/{id}", srv.handleGetArticleByID)
-	mux.HandleFunc("POST /articles/{id}/views", srv.handleIncrementViewCount)
-	mux.HandleFunc("GET /articles/{id}/views", srv.handleGetViewCount)
+	registerRoutes(mux, srv)
 
 	port := os.Getenv("PORT")
 	if port == "" {
