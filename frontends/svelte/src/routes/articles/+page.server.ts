@@ -1,11 +1,11 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import type { IArticleService } from '$lib/services/IArticleService';
-import { FileArticleService } from '$lib/services/FileArticleService';
+import { env } from '$env/dynamic/private';
+import { ApiArticleService } from '$lib/services/ApiArticleService';
 
 export const load: PageServerLoad = async () => {
 	try {
-		const articleService: IArticleService = new FileArticleService();
+		const articleService = new ApiArticleService(env.API_URL);
 		const articles = await articleService.getArticles();
 
 		return {
