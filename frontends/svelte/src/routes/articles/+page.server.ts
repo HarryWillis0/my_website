@@ -11,7 +11,8 @@ export const load: PageServerLoad = async () => {
 		return {
 			articles
 		};
-	} catch {
+	} catch (e) {
+		console.error('Failed to load articles:', e);
 		error(500, 'Failed to load articles');
 	}
 };
