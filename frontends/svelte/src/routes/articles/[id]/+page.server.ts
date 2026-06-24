@@ -9,9 +9,8 @@ export const load: PageServerLoad<{ article: IArticle | null; viewCount: number 
 }) => {
 	try {
 		const articleService = new ApiArticleService(env.API_URL);
-		const [article, , viewCountRes] = await Promise.all([
+		const [article, viewCountRes] = await Promise.all([
 			articleService.getArticleById(params.id),
-			fetch(`${env.API_URL}/articles/${params.id}/views`, { method: 'POST' }),
 			fetch(`${env.API_URL}/articles/${params.id}/views`)
 		]);
 

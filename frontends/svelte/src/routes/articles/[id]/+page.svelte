@@ -1,9 +1,15 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import ArticleDetail from '$lib/components/article/ArticleDetail.svelte';
 	import BackToArticles from '$lib/components/article/BackToArticles.svelte';
 	import type { IArticle } from '$lib/types/article.js';
 
 	let { data }: { data: { article: IArticle | null; viewCount: number } } = $props();
+
+	onMount(() => {
+		fetch(`/articles/${page.params.id}/views`, { method: 'POST' });
+	});
 </script>
 
 <div class="flex flex-col">
