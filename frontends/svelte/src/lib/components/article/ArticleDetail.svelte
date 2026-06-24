@@ -2,7 +2,9 @@
 	import { marked } from 'marked';
 	import type { IArticle } from '$lib/types';
 
-	let { article }: { article: IArticle } = $props();
+	let { article, viewCount }: { article: IArticle; viewCount: number } = $props();
+
+	const formatViewCount = (n: number) => `${n.toLocaleString('en-US')} VIEWS`;
 
 	const formatDate = (date: Date) =>
 		new Date(date).toLocaleDateString('en-CA', {
@@ -43,6 +45,7 @@
 		{#if showUpdated()}
 			<span>Updated {formatDate(article.lastModifiedAt)}</span>
 		{/if}
+		<span>{formatViewCount(viewCount)}</span>
 	</div>
 </div>
 

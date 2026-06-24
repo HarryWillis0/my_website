@@ -3,12 +3,12 @@
 	import BackToArticles from '$lib/components/article/BackToArticles.svelte';
 	import type { IArticle } from '$lib/types/article.js';
 
-	let { data }: { data: { article: IArticle | null } } = $props();
+	let { data }: { data: { article: IArticle | null; viewCount: number } } = $props();
 </script>
 
 <div class="flex flex-col">
 	{#if data.article}
-		<ArticleDetail article={data.article} />
+		<ArticleDetail article={data.article} viewCount={data.viewCount} />
 	{:else}
 		<div class="border-t border-gray-200 pt-6">
 			<h1 class="mb-4 font-serif text-3xl leading-snug font-semibold text-gray-900">
