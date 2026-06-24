@@ -15,12 +15,17 @@ export const load: PageServerLoad<{ article: IArticle | null; viewCount: number 
 			fetch(`${env.API_URL}/articles/${params.id}/views`)
 		]);
 
+		if (!viewCountRes.ok) {
+			console.warn(`View count API returned ${viewCountRes.status} for article ${params.id}`);
+		}
+
 		const viewCount: number = viewCountRes.ok
 			? ((await viewCountRes.json()) as { viewCount: number }).viewCount
 			: 0;
 
 		return { article, viewCount };
-	} catch {
+	} catch (e) {
+		console.error('Failed to load article:', e);
 		error(500, 'Failed to load article');
 	}
 };
