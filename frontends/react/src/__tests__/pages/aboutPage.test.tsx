@@ -17,7 +17,7 @@ describe(AboutPage, () => {
 		expect(screen.getByText(/Hello/i)).toBeInTheDocument();
 		expect(screen.getByText(/full stack developer/i)).toBeInTheDocument();
 		expect(screen.getByText(/traditional territories of the peoples of Treaty 7/i)).toBeInTheDocument();
-		expect(screen.getByRole("link", { name: "github" })).toBeInTheDocument();
+		expect(screen.getByRole("link", { name: "github (opens in new tab)" })).toBeInTheDocument();
 	});
 
 	test("applies correct CSS classes", () => {

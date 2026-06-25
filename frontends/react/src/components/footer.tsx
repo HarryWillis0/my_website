@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
 				target="_blank"
 				rel="noopener noreferrer"
 				className="icon-button text-4xl mx-5"
-				aria-label="github"
+				aria-label="github (opens in new tab)"
 			>
 				<i className="fa-brands fa-github"></i>
 			</a>
@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
 				target="_blank"
 				rel="noopener noreferrer"
 				className="icon-button text-4xl mx-5"
-				aria-label="strava"
+				aria-label="strava (opens in new tab)"
 			>
 				<i className="fab fa-strava" />
 			</a>
