@@ -12,6 +12,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{data.article?.title ?? 'Article'} — harrywillis.dev</title>
+</svelte:head>
+
 <div class="flex flex-col">
 	{#if data.article}
 		<ArticleDetail article={data.article} viewCount={data.viewCount} />
