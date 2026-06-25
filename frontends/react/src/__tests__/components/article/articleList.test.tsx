@@ -63,7 +63,7 @@ describe(ArticleList, () => {
 	test("renders Footer component", () => {
 		render(<ArticleList articles={mockArticles} />);
 
-		const githubLink = screen.getByRole("link", { name: "github" });
+		const githubLink = screen.getByRole("link", { name: "github (opens in new tab)" });
 		expect(githubLink).toBeInTheDocument();
 	});
 

@@ -8,7 +8,7 @@ describe(Footer, () => {
 	test("renders GitHub icon link with correct attributes", () => {
 		render(<Footer />);
 
-		const githubLink = screen.getByRole("link", { name: "github" });
+		const githubLink = screen.getByRole("link", { name: "github (opens in new tab)" });
 
 		expect(githubLink).toHaveAttribute("href", "https://github.com/HarryWillis0");
 		expect(githubLink).toHaveAttribute("target", "_blank");
@@ -18,7 +18,7 @@ describe(Footer, () => {
 	test("renders Strava icon link with correct attributes", () => {
 		render(<Footer />);
 
-		const stravaLink = screen.getByRole("link", { name: "strava" });
+		const stravaLink = screen.getByRole("link", { name: "strava (opens in new tab)" });
 
 		expect(stravaLink).toHaveAttribute("href", "https://www.strava.com/athletes/17003155");
 		expect(stravaLink).toHaveAttribute("target", "_blank");
@@ -28,7 +28,7 @@ describe(Footer, () => {
 	test("renders GitHub icon link", () => {
 		render(<Footer />);
 
-		const githubIcon = screen.getByRole("link", { name: "github" }).querySelector("i");
+		const githubIcon = screen.getByRole("link", { name: "github (opens in new tab)" }).querySelector("i");
 
 		expect(githubIcon).toHaveClass("fa-brands", "fa-github");
 	});
@@ -36,7 +36,7 @@ describe(Footer, () => {
 	test("renders Strava icon link", () => {
 		render(<Footer />);
 
-		const stravaIcon = screen.getByRole("link", { name: "strava" }).querySelector("i");
+		const stravaIcon = screen.getByRole("link", { name: "strava (opens in new tab)" }).querySelector("i");
 
 		expect(stravaIcon).toHaveClass("fab", "fa-strava");
 	});

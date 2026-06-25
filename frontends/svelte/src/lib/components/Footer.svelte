@@ -4,7 +4,7 @@
 		target="_blank"
 		rel="noopener noreferrer"
 		class="icon-button mx-5 text-4xl"
-		aria-label="github"
+		aria-label="github (opens in new tab)"
 	>
 		<i class="fa-brands fa-github"></i>
 	</a>
@@ -13,7 +13,7 @@
 		target="_blank"
 		rel="noopener noreferrer"
 		class="icon-button mx-5 text-4xl"
-		aria-label="strava"
+		aria-label="strava (opens in new tab)"
 	>
 		<i class="fab fa-strava"></i>
 	</a>
