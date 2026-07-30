@@ -9,7 +9,7 @@ export const projects: IProject[] = [
 		tags: ['Elixir', 'Phoenix LiveView'],
 		repoUrl: 'https://github.com/HarryWillis0/strava_wrapper',
 		liveUrl: 'https://stravawrapper.harrywillis.dev',
-		body: `Strava Wrapper fetches your full Strava activity history and lets you filter it by gear — which bike, which shoes — without firing a new API call on every filter change. Everything after the initial sync happens server-side, so filtering feels instant.
+		body: `Strava Wrapper fetches your full Strava activity history and lets you filter it by gear — which bike, which shoes etc.
 
 ## Why I built it
 
