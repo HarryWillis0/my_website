@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import type { IProject } from '$lib/types';
 
 	let { project }: { project: IProject } = $props();
 </script>
 
-<!-- eslint-disable svelte/no-navigation-without-resolve -- /projects/[id] route lands in #79 -->
 <a
-	href={`/projects/${project.id}`}
+	href={resolve(`/projects/${project.id}`)}
 	class="group flex flex-col gap-1.5 border-b border-gray-100 py-6 text-inherit no-underline transition-colors duration-200 hover:bg-gray-50"
 >
 	<h2 class="font-serif text-lg leading-snug font-semibold text-gray-900 group-hover:underline">
@@ -19,4 +19,3 @@
 		{/each}
 	</div>
 </a>
-<!-- eslint-enable svelte/no-navigation-without-resolve -->
