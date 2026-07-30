@@ -8,8 +8,9 @@ export const projects: IProject[] = [
 			'A Phoenix LiveView app that pulls your full Strava ride history and lets you filter by gear.',
 		tags: ['Elixir', 'Phoenix LiveView'],
 		repoUrl: 'https://github.com/HarryWillis0/strava_wrapper',
-		liveUrl: 'https://stravawrapper.harrywillis.dev',
-		body: `Strava Wrapper fetches your full Strava activity history and lets you filter it by gear — which bike, which shoes etc.
+		body: `> **Note:** As of July 2, 2026, Strava requires Standard-tier API applications to be linked to an active Strava subscription. I won't be maintaining one just to keep the demo running, so the live version of this app is offline.
+
+Strava Wrapper fetches your full Strava activity history and lets you filter it by gear — which bike, which shoes etc.
 
 ## Why I built it
 
