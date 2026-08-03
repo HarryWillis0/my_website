@@ -26,5 +26,31 @@ Strava's own gear stats are limited, and I wanted a faster way to slice my ride 
 ## Stack
 
 Elixir and Phoenix LiveView, deployed as a Docker release to Cloud Run via GitHub Actions CI/CD, served on a custom domain.`
+	},
+	{
+		id: 'parlay-punk',
+		title: 'Parlay Punk',
+		description:
+			'An AI-powered same-game parlay advisor for NHL, soccer, and MLB that reasons through legs in plain English, with a configurable leg count and risk tolerance.',
+		tags: ['SvelteKit', 'TypeScript', 'Claude API'],
+		liveUrl: 'https://app.parlaypunk.com',
+		body: `> **Note:** For entertainment and personal research only — not gambling advice.
+
+Parlay Punk is an AI-powered same-game parlay (SGP) advisor. Open the app, see today's games across NHL, soccer, and MLB, and get a parlay recommendation with plain-English reasoning behind each leg.
+
+## Why I built it
+
+Two threads came together here. I wanted to put Robert C. Martin's Clean Architecture through its paces on something built to production standards, not a toy. I also like the occasional bet on big games but don't know the details well enough to reason through them myself, so I built the tool I actually wanted to use.
+
+## How it works
+
+- Fetches the day's games, live odds, and team/goalie stats across three sports, then hands that context to Claude to generate a parlay with reasoning for each leg
+- Leg count (2–6) and a min-odds risk tier — from Safe to Spicy — are both user-configurable
+- A payout calculator on each pick card turns odds into an actual dollar figure for your stake
+- Sign in with an emailed code to save your leg count and risk tier across sessions
+
+## Stack
+
+A pnpm monorepo split into clean-architecture layers — core (entities/ports), app (use cases), infra (adapters for the NHL API, Odds API, and Claude) — consumed by three clients: a SvelteKit web app, an Expo/React Native mobile app, and a Hono API service. The web app is deployed to Cloudflare Pages, with the API running on GCP.`
 	}
 ];

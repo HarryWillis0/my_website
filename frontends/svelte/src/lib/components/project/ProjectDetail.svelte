@@ -17,12 +17,14 @@
 		{/each}
 	</div>
 	<div class="flex gap-4 text-xs tracking-widest uppercase">
-		<a
-			href={project.repoUrl}
-			target="_blank"
-			rel="noopener noreferrer external"
-			class="text-gray-400 no-underline hover:text-gray-900">Repo</a
-		>
+		{#if project.repoUrl}
+			<a
+				href={project.repoUrl}
+				target="_blank"
+				rel="noopener noreferrer external"
+				class="text-gray-400 no-underline hover:text-gray-900">Repo</a
+			>
+		{/if}
 		{#if project.liveUrl}
 			<a
 				href={project.liveUrl}

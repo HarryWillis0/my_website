@@ -20,6 +20,12 @@ const mockProjectWithLive: IProject = {
 	liveUrl: 'https://live-project.example.com'
 };
 
+const mockProjectWithoutRepo: IProject = {
+	...mockProject,
+	id: 'no-repo-project',
+	repoUrl: undefined
+};
+
 describe('ProjectDetail', () => {
 	it('renders title, description, and tags', () => {
 		render(ProjectDetail, { props: { project: mockProject } });
@@ -43,6 +49,11 @@ describe('ProjectDetail', () => {
 		expect(link.getAttribute('rel')?.split(/\s+/)).toEqual(
 			expect.arrayContaining(['noopener', 'noreferrer'])
 		);
+	});
+
+	it('does not render a Repo link when repoUrl is absent', () => {
+		render(ProjectDetail, { props: { project: mockProjectWithoutRepo } });
+		expect(screen.queryByRole('link', { name: 'Repo' })).not.toBeInTheDocument();
 	});
 
 	it('does not render a Live link when liveUrl is absent', () => {

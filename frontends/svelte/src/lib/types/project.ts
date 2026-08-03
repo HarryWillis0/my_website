@@ -4,6 +4,6 @@ export interface IProject {
 	description: string;
 	body: string;
 	tags: string[];
-	repoUrl: string;
+	repoUrl?: string;
 	liveUrl?: string;
 }
