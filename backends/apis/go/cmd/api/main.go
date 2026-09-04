@@ -7,7 +7,8 @@ import (
 	"os"
 
 	"cloud.google.com/go/firestore"
-	"harry.willis.dev/go/articles/internal/service"
+	"harry.willis.dev/go/articles/internal/article"
+	"harry.willis.dev/go/articles/internal/route"
 )
 
 func registerRoutes(mux *http.ServeMux, srv *server) {
@@ -20,7 +21,7 @@ func registerRoutes(mux *http.ServeMux, srv *server) {
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	svc, err := service.NewArticleService("data/articles.json")
+	svc, err := article.NewArticleService("data/articles.json")
 	if err != nil {
 		logger.Error("failed to load articles", "error", err)
 		os.Exit(1)
@@ -32,7 +33,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	srv := &server{articles: svc, views: views}
+	routes, err := route.NewRouteService("data/routes")
+	if err != nil {
+		logger.Error("failed to create route service", "error", err)
+		os.Exit(1)
+	}
+
+	srv := &server{articles: svc, views: views, routes: routes, logger: logger}
 
 	mux := http.NewServeMux()
 	registerRoutes(mux, srv)
