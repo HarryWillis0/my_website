@@ -113,7 +113,9 @@ func (rs *RouteService) computeRoute(articleId string) (Route, error) {
 	}
 
 	computedRoute := Route{
-		Points:        routePoints,
+		// Distance and elevation gain are derived from the full-resolution
+		// points; only the points actually sent to clients are decimated.
+		Points:        decimatePoints(routePoints, maxRoutePoints),
 		Distance:      routePoints[len(routePoints)-1].Distance,
 		ElevationGain: elevationGain(routePoints),
 	}
