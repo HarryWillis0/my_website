@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { marked } from 'marked';
 	import type { IArticle } from '$lib/types';
+	import RouteMap from '$lib/components/route/RouteMap.svelte';
 
 	let { article, viewCount }: { article: IArticle; viewCount: number } = $props();
 
@@ -47,6 +48,12 @@
 		<span>{formatViewCount(viewCount)}</span>
 	</div>
 </div>
+
+{#if article.route}
+	<div class="mb-8">
+		<RouteMap route={article.route} name={article.title} />
+	</div>
+{/if}
 
 <!-- Body -->
 <div class="prose-custom">
