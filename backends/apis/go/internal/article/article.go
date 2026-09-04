@@ -1,4 +1,4 @@
-package service
+package article
 
 type Article struct {
 	ID             string `json:"id"`

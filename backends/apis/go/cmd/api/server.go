@@ -3,14 +3,16 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
-	"harry.willis.dev/go/articles/internal/service"
+	"harry.willis.dev/go/articles/internal/article"
+	"harry.willis.dev/go/articles/internal/route"
 )
 
 type articleStore interface {
-	GetAll() []service.Article
-	GetByID(id string) (service.Article, bool)
+	GetAll() []article.Article
+	GetByID(id string) (article.Article, bool)
 }
 
 type viewStore interface {
@@ -18,9 +20,15 @@ type viewStore interface {
 	GetViewCount(ctx context.Context, articleID string) (int64, error)
 }
 
+type routeStore interface {
+	GetRouteByArticleID(articleID string) (route.Route, error)
+}
+
 type server struct {
 	articles articleStore
 	views    viewStore
+	routes   routeStore
+	logger   *slog.Logger
 }
 
 func (s *server) handleGetArticles(w http.ResponseWriter, r *http.Request) {
@@ -29,12 +37,25 @@ func (s *server) handleGetArticles(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) handleGetArticleByID(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	article, ok := s.articles.GetByID(id)
+	art, ok := s.articles.GetByID(id)
 	if !ok {
 		http.NotFound(w, r)
 		return
 	}
-	writeJSON(w, http.StatusOK, article)
+
+	rt, err := s.routes.GetRouteByArticleID(id)
+	if err != nil {
+		s.logger.Error("failed to get route for article", "articleId", id, "error", err)
+	}
+
+	// A missing or failed route must render as an explicit null, not the
+	// zero-value Route struct — so only attach a route when we actually have one.
+	var routeResp *route.Route
+	if err == nil && !rt.IsEmpty() {
+		routeResp = &rt
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"article": art, "route": routeResp})
 }
 
 func (s *server) handleIncrementViewCount(w http.ResponseWriter, r *http.Request) {

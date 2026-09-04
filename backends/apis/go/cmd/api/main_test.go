@@ -3,12 +3,16 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"sync"
 	"testing"
 
-	"harry.willis.dev/go/articles/internal/service"
+	"harry.willis.dev/go/articles/internal/article"
+	"harry.willis.dev/go/articles/internal/route"
 )
 
 type fakeViewStore struct {
@@ -32,13 +36,29 @@ func (f *fakeViewStore) GetViewCount(_ context.Context, articleID string) (int64
 	return f.counts[articleID], nil
 }
 
+// fakeRouteStore returns whatever route/err it's configured with, regardless
+// of articleID — tests set the fields directly to drive success/failure paths.
+type fakeRouteStore struct {
+	route route.Route
+	err   error
+}
+
+func (f *fakeRouteStore) GetRouteByArticleID(_ string) (route.Route, error) {
+	return f.route, f.err
+}
+
 func newTestServer(t *testing.T) *server {
 	t.Helper()
-	svc, err := service.NewArticleService("testdata/articles.json")
+	svc, err := article.NewArticleService("testdata/articles.json")
 	if err != nil {
 		t.Fatalf("failed to load test articles: %v", err)
 	}
-	return &server{articles: svc, views: &fakeViewStore{}}
+	return &server{
+		articles: svc,
+		views:    &fakeViewStore{},
+		routes:   &fakeRouteStore{},
+		logger:   slog.New(slog.NewTextHandler(io.Discard, nil)),
+	}
 }
 
 func TestGetArticles_ReturnsIArticleShape(t *testing.T) {
@@ -79,12 +99,81 @@ func TestGetArticleByID_ReturnsArticle(t *testing.T) {
 		t.Fatalf("expected 200, got %d", w.Code)
 	}
 
-	var article map[string]any
-	if err := json.NewDecoder(w.Body).Decode(&article); err != nil {
+	var body map[string]any
+	if err := json.NewDecoder(w.Body).Decode(&body); err != nil {
 		t.Fatalf("invalid JSON: %v", err)
 	}
-	if article["id"] != "test-1" {
-		t.Errorf("expected id %q, got %v", "test-1", article["id"])
+
+	articleField, ok := body["article"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected article object in response, got %v", body["article"])
+	}
+	if articleField["id"] != "test-1" {
+		t.Errorf("expected id %q, got %v", "test-1", articleField["id"])
+	}
+}
+
+func TestGetArticleByID_RouteFound_IncludesRouteInResponse(t *testing.T) {
+	srv := newTestServer(t)
+	srv.routes = &fakeRouteStore{
+		route: route.Route{
+			Points:        []route.RoutePoint{{Lat: 1, Lon: 2, Ele: 3, Distance: 4}},
+			Distance:      4,
+			ElevationGain: 3,
+		},
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/articles/test-1", nil)
+	req.SetPathValue("id", "test-1")
+	w := httptest.NewRecorder()
+	srv.handleGetArticleByID(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+
+	var body map[string]any
+	if err := json.NewDecoder(w.Body).Decode(&body); err != nil {
+		t.Fatalf("invalid JSON: %v", err)
+	}
+
+	routeField, ok := body["route"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected route object in response, got %v", body["route"])
+	}
+	if routeField["distance"] != 4.0 {
+		t.Errorf("expected distance 4, got %v", routeField["distance"])
+	}
+}
+
+func TestGetArticleByID_RouteLookupFails_ReturnsArticleWithNullRoute(t *testing.T) {
+	srv := newTestServer(t)
+	srv.routes = &fakeRouteStore{err: errors.New("boom")}
+
+	req := httptest.NewRequest(http.MethodGet, "/articles/test-1", nil)
+	req.SetPathValue("id", "test-1")
+	w := httptest.NewRecorder()
+	srv.handleGetArticleByID(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 even when route lookup fails, got %d", w.Code)
+	}
+
+	var body map[string]any
+	if err := json.NewDecoder(w.Body).Decode(&body); err != nil {
+		t.Fatalf("invalid JSON: %v", err)
+	}
+
+	if body["route"] != nil {
+		t.Errorf("expected route to be null on lookup failure, got %v", body["route"])
+	}
+
+	articleField, ok := body["article"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected article object in response, got %v", body["article"])
+	}
+	if articleField["id"] != "test-1" {
+		t.Errorf("expected article id %q, got %v", "test-1", articleField["id"])
 	}
 }
 
