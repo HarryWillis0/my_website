@@ -8,7 +8,7 @@ const articlesData = rawArticles as { articles: IArticleDto[] };
 
 export class FileArticleService implements IArticleService {
 	async getArticles(): Promise<IArticle[]> {
-		return articlesData.articles.map(mapDtoToArticle);
+		return articlesData.articles.map((dto) => mapDtoToArticle(dto));
 	}
 
 	async getArticleById(id: string): Promise<IArticle | null> {
