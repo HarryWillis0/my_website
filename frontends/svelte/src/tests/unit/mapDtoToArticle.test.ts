@@ -51,4 +51,50 @@ describe('mapDtoToArticle', () => {
 
 		expect(() => mapDtoToArticle(dto)).toThrow('Invalid date in article 1');
 	});
+
+	it('attaches route when one is provided', () => {
+		const dto: IArticleDto = {
+			id: '1',
+			title: 'Test Article',
+			summary: 'This is a test article',
+			body: '# Body',
+			created: '2025-01-01T00:00:00.000Z',
+			lastModifiedAt: '2025-01-02T00:00:00.000Z'
+		};
+		const route = {
+			points: [{ lat: 37.7749, lon: -122.4194, ele: 10, distance: 0 }],
+			distance: 1000,
+			elevationGain: 50
+		};
+
+		const article: IArticle = mapDtoToArticle(dto, route);
+
+		expect(article.route).toEqual(route);
+	});
+
+	it('leaves route undefined when none is provided', () => {
+		const dto: IArticleDto = {
+			id: '1',
+			title: 'Test Article',
+			summary: 'This is a test article',
+			body: '# Body',
+			created: '2025-01-01T00:00:00.000Z',
+			lastModifiedAt: '2025-01-02T00:00:00.000Z'
+		};
+
+		expect(mapDtoToArticle(dto).route).toBeUndefined();
+	});
+
+	it('leaves route undefined when explicitly null', () => {
+		const dto: IArticleDto = {
+			id: '1',
+			title: 'Test Article',
+			summary: 'This is a test article',
+			body: '# Body',
+			created: '2025-01-01T00:00:00.000Z',
+			lastModifiedAt: '2025-01-02T00:00:00.000Z'
+		};
+
+		expect(mapDtoToArticle(dto, null).route).toBeUndefined();
+	});
 });

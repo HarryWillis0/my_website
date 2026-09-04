@@ -1,6 +1,6 @@
-import type { IArticleDto, IArticle } from '$lib/types';
+import type { IArticleDto, IArticle, IRouteDto } from '$lib/types';
 
-export function mapDtoToArticle(dto: IArticleDto): IArticle {
+export function mapDtoToArticle(dto: IArticleDto, route?: IRouteDto | null): IArticle {
 	const created = new Date(dto.created);
 	const lastModifiedAt = new Date(dto.lastModifiedAt);
 
@@ -11,6 +11,7 @@ export function mapDtoToArticle(dto: IArticleDto): IArticle {
 	return {
 		...dto,
 		created,
-		lastModifiedAt
+		lastModifiedAt,
+		route: route ?? undefined
 	};
 }

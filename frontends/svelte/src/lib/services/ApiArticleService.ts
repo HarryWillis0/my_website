@@ -1,4 +1,4 @@
-import type { IArticle, IArticleDto } from '$lib/types';
+import type { IArticle, IArticleDetailDto, IArticleDto } from '$lib/types';
 import { mapDtoToArticle } from '$lib/utils/mapDtoToArticle';
 import type { IArticleService } from '$lib/services/IArticleService';
 
@@ -11,7 +11,7 @@ export class ApiArticleService implements IArticleService {
 			throw new Error(`Failed to fetch articles: ${response.status}`);
 		}
 		const dtos: IArticleDto[] = await response.json();
-		return dtos.map(mapDtoToArticle);
+		return dtos.map((dto) => mapDtoToArticle(dto));
 	}
 
 	async getArticleById(id: string): Promise<IArticle | null> {
@@ -22,7 +22,7 @@ export class ApiArticleService implements IArticleService {
 		if (!response.ok) {
 			throw new Error(`Failed to fetch article: ${response.status}`);
 		}
-		const dto: IArticleDto = await response.json();
-		return mapDtoToArticle(dto);
+		const { article, route }: IArticleDetailDto = await response.json();
+		return mapDtoToArticle(article, route);
 	}
 }

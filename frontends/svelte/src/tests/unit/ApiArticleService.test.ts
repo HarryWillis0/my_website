@@ -57,16 +57,33 @@ describe('ApiArticleService', () => {
 
 	describe('getArticleById', () => {
 		it('fetches from the correct endpoint', async () => {
-			const spy = mockFetch(testDtos[0]);
+			const spy = mockFetch({ article: testDtos[0], route: null });
 			await service.getArticleById('1');
 			expect(spy).toHaveBeenCalledWith('http://test-api/articles/1');
 		});
 
 		it('returns a mapped article with Date objects', async () => {
-			mockFetch(testDtos[0]);
+			mockFetch({ article: testDtos[0], route: null });
 			const article = await service.getArticleById('1');
 			expect(article?.created).toBeInstanceOf(Date);
 			expect(article?.lastModifiedAt).toBeInstanceOf(Date);
+		});
+
+		it('attaches route when the API returns one', async () => {
+			const route = {
+				points: [{ lat: 37.7749, lon: -122.4194, ele: 10, distance: 0 }],
+				distance: 1000,
+				elevationGain: 50
+			};
+			mockFetch({ article: testDtos[0], route });
+			const article = await service.getArticleById('1');
+			expect(article?.route).toEqual(route);
+		});
+
+		it('leaves route undefined when the API returns null', async () => {
+			mockFetch({ article: testDtos[0], route: null });
+			const article = await service.getArticleById('1');
+			expect(article?.route).toBeUndefined();
 		});
 
 		it('returns null on 404', async () => {
