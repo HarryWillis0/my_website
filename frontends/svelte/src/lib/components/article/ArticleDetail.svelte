@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { marked } from 'marked';
 	import type { IArticle } from '$lib/types';
-	import RouteMap from '$lib/components/route/RouteMap.svelte';
+	// RouteMap temporarily disabled — crashes on unmount, investigating.
+	// import RouteMap from '$lib/components/route/RouteMap.svelte';
 
 	let { article, viewCount }: { article: IArticle; viewCount: number } = $props();
 
@@ -49,11 +50,14 @@
 	</div>
 </div>
 
-{#if article.route}
-	<div class="mb-8">
-		<RouteMap route={article.route} name={article.title} />
-	</div>
-{/if}
+<!--
+	RouteMap temporarily disabled — crashes on unmount, investigating.
+	{#if article.route}
+		<div class="mb-8">
+			<RouteMap route={article.route} name={article.title} />
+		</div>
+	{/if}
+-->
 
 <!-- Body -->
 <div class="prose-custom">

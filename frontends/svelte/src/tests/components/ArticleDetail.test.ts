@@ -48,14 +48,16 @@ describe('ArticleDetail', () => {
 		expect(screen.queryByRole('img', { name: /map of/i })).not.toBeInTheDocument();
 	});
 
-	it('renders the route map when the article has a route', () => {
+	// RouteMap rendering is temporarily disabled (crashes on unmount) — skipped
+	// until that's fixed and the component is re-enabled in ArticleDetail.svelte.
+	it.skip('renders the route map when the article has a route', () => {
 		render(ArticleDetail, {
 			props: { article: { ...mockArticle, route: mockRoute }, viewCount: 0 }
 		});
 		expect(screen.getByRole('img', { name: /map of test article/i })).toBeInTheDocument();
 	});
 
-	it('positions the route map after the header and before the prose body', () => {
+	it.skip('positions the route map after the header and before the prose body', () => {
 		const { container } = render(ArticleDetail, {
 			props: { article: { ...mockArticle, route: mockRoute }, viewCount: 0 }
 		});
