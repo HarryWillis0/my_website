@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import type { IRoutePoint } from '$lib/types';
 import {
+	buildElevationAreaPath,
 	buildElevationPath,
 	computeBounds,
 	formatDistanceKm,
@@ -40,6 +41,19 @@ describe('buildElevationPath', () => {
 	it('returns an empty string for fewer than 2 points', () => {
 		expect(buildElevationPath([], 100, 40)).toBe('');
 		expect(buildElevationPath([fixturePoints[0]], 100, 40)).toBe('');
+	});
+});
+
+describe('buildElevationAreaPath', () => {
+	it('closes the elevation line down to the baseline and back to the start', () => {
+		const areaPath = buildElevationAreaPath(fixturePoints, 100, 40);
+		const linePath = buildElevationPath(fixturePoints, 100, 40);
+		expect(areaPath).toBe(`${linePath} L100,40 L0,40 Z`);
+	});
+
+	it('returns an empty string for fewer than 2 points', () => {
+		expect(buildElevationAreaPath([], 100, 40)).toBe('');
+		expect(buildElevationAreaPath([fixturePoints[0]], 100, 40)).toBe('');
 	});
 });
 

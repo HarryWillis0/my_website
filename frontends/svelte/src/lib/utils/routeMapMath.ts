@@ -21,6 +21,19 @@ export function buildElevationPath(points: IRoutePoint[], width: number, height:
 	return points.map((p, i) => `${i === 0 ? 'M' : 'L'}${toX(p.distance)},${toY(p.ele)}`).join(' ');
 }
 
+// Closes the elevation line into a fillable shape by dropping down to the
+// baseline at the right edge and back to the origin at the left edge.
+export function buildElevationAreaPath(
+	points: IRoutePoint[],
+	width: number,
+	height: number
+): string {
+	const linePath = buildElevationPath(points, width, height);
+	if (!linePath) return '';
+
+	return `${linePath} L${width},${height} L0,${height} Z`;
+}
+
 export function computeBounds(points: IRoutePoint[]): {
 	minLon: number;
 	minLat: number;

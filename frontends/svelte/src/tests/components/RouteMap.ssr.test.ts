@@ -27,4 +27,12 @@ describe('RouteMap (server-side rendering)', () => {
 		expect(screen.getByText(/Test Route/)).toBeInTheDocument();
 		expect(mapConstructor).not.toHaveBeenCalled();
 	});
+
+	it('renders the card label and collapsed elevation footer statically', () => {
+		const { container } = render(RouteMap, { props: { route: fixtureRoute, name: 'Test Route' } });
+
+		expect(screen.getByText('Route')).toBeInTheDocument();
+		expect(screen.getByText('Elevation')).toBeInTheDocument();
+		expect(container.querySelector('.route-map-elevation-details')).toBeInTheDocument();
+	});
 });

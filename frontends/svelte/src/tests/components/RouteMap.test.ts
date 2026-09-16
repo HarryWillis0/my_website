@@ -95,6 +95,66 @@ describe('RouteMap', () => {
 				})
 			})
 		);
-		expect(addLayer).toHaveBeenCalled();
+		expect(addLayer).toHaveBeenCalledWith(
+			expect.objectContaining({ paint: expect.objectContaining({ 'line-color': '#374151' }) })
+		);
+	});
+
+	it('shows a fallback message in place of the canvas when MapLibre reports an error', async () => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		render(RouteMap, { props: { route: fixtureRoute, name: 'Test Route' } });
+
+		await waitFor(() => expect(on).toHaveBeenCalledWith('error', expect.any(Function)));
+		const errorHandler = on.mock.calls.find(([event]) => event === 'error')?.[1];
+		errorHandler(new Error('style failed to load'));
+
+		await waitFor(() => expect(screen.getByText(/map unavailable/i)).toBeInTheDocument());
+		expect(screen.queryByRole('img', { name: /map of test route/i })).not.toBeInTheDocument();
+		expect(consoleErrorSpy).toHaveBeenCalled();
+
+		consoleErrorSpy.mockRestore();
+	});
+
+	it('does not throw when the map fails to clean up on unmount', async () => {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+		remove.mockImplementationOnce(() => {
+			throw new Error('style not loaded');
+		});
+
+		const { unmount } = render(RouteMap, { props: { route: fixtureRoute, name: 'Test Route' } });
+		await waitFor(() => expect(fitBounds).toHaveBeenCalled());
+
+		expect(() => unmount()).not.toThrow();
+		expect(consoleErrorSpy).toHaveBeenCalled();
+
+		consoleErrorSpy.mockRestore();
+	});
+
+	it('wraps the feature in a bordered card with a Route label', () => {
+		const { container } = render(RouteMap, { props: { route: fixtureRoute, name: 'Test Route' } });
+
+		expect(screen.getByText('Route')).toBeInTheDocument();
+		expect(container.querySelector('.route-map')).toHaveClass('rounded-lg', 'border');
+	});
+
+	it('renders the elevation chart collapsed by default inside a details/summary footer', () => {
+		const { container } = render(RouteMap, { props: { route: fixtureRoute, name: 'Test Route' } });
+
+		const details = container.querySelector('.route-map-elevation-details');
+		expect(details).toBeInTheDocument();
+		expect((details as HTMLDetailsElement).open).toBe(false);
+		expect(screen.getByText('Elevation')).toBeInTheDocument();
+	});
+
+	it('fills the area under the elevation curve in the unified route color', () => {
+		const { container } = render(RouteMap, { props: { route: fixtureRoute, name: 'Test Route' } });
+
+		const paths = container.querySelectorAll('.route-map-elevation path');
+		expect(paths).toHaveLength(2);
+		const [areaPath, linePath] = paths;
+		expect(areaPath.getAttribute('fill')).toBe('#374151');
+		expect(areaPath.getAttribute('fill-opacity')).toBe('0.08');
+		expect(linePath.getAttribute('stroke')).toBe('#374151');
 	});
 });
