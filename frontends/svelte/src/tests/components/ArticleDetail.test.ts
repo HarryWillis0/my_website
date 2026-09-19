@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
 
 import ArticleDetail from '$lib/components/article/ArticleDetail.svelte';
@@ -17,6 +17,11 @@ const mockArticle: IArticle = {
 	body: 'Some body text',
 	created: new Date('2024-01-01'),
 	lastModifiedAt: new Date('2024-01-01')
+};
+
+const articleWithImages: IArticle = {
+	...mockArticle,
+	body: '![First image](/first.jpg)\n\n![Second image](/second.jpg)'
 };
 
 const mockRoute: IRoute = {
@@ -70,5 +75,40 @@ describe('ArticleDetail', () => {
 
 		expect(headerToRouteMap & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 		expect(routeMapToProse & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+	});
+
+	it('writes a data-index attribute onto each rendered image', () => {
+		const { container } = render(ArticleDetail, {
+			props: { article: articleWithImages, viewCount: 0 }
+		});
+
+		const images = container.querySelectorAll('.prose-custom img');
+		expect(images[0]).toHaveAttribute('data-index', '0');
+		expect(images[1]).toHaveAttribute('data-index', '1');
+	});
+
+	it('opens the lightbox on the clicked image when an image in the body is clicked', async () => {
+		const { container } = render(ArticleDetail, {
+			props: { article: articleWithImages, viewCount: 0 }
+		});
+
+		const secondImage = container.querySelectorAll('.prose-custom img')[1];
+		await fireEvent.click(secondImage);
+
+		const dialog = container.querySelector('dialog');
+		expect(dialog?.open).toBe(true);
+		const lightboxImg = dialog!.querySelector('img');
+		expect(lightboxImg).toHaveAttribute('src', '/second.jpg');
+		expect(lightboxImg).toHaveAttribute('alt', 'Second image');
+	});
+
+	it('does not open the lightbox when clicking outside an image', async () => {
+		const { container } = render(ArticleDetail, {
+			props: { article: articleWithImages, viewCount: 0 }
+		});
+
+		await fireEvent.click(container.querySelector('.prose-custom')!);
+
+		expect(container.querySelector('dialog')?.open).toBe(false);
 	});
 });
