@@ -5,7 +5,8 @@ import ArticleDetail from '$lib/components/article/ArticleDetail.svelte';
 import type { IArticle, IRoute } from '$lib/types';
 
 vi.mock('maplibre-gl', () => ({
-	Map: vi.fn(() => ({ fitBounds: vi.fn(), on: vi.fn(), remove: vi.fn() }))
+	Map: vi.fn(() => ({ fitBounds: vi.fn(), on: vi.fn(), remove: vi.fn() })),
+	setWorkerUrl: vi.fn()
 }));
 vi.mock('$app/environment', () => ({ browser: true }));
 

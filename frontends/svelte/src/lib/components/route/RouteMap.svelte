@@ -2,6 +2,11 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import 'maplibre-gl/dist/maplibre-gl.css';
+	// maplibre-gl guesses its worker script's URL relative to its own bundle
+	// location, which breaks once Rollup bundles it into a hashed chunk.
+	// Importing it as a `?url` asset makes Vite emit it as its own file (in
+	// both dev and prod) and hand back the real URL to point the library at.
+	import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 	import type { IRoute } from '$lib/types';
 	import {
 		buildElevationAreaPath,
@@ -30,8 +35,10 @@
 		let cancelled = false;
 
 		(async () => {
-			const { Map: MapLibreMap } = await import('maplibre-gl');
+			const { Map: MapLibreMap, setWorkerUrl } = await import('maplibre-gl');
 			if (cancelled) return;
+
+			setWorkerUrl(maplibreWorkerUrl);
 
 			const bounds = computeBounds(route.points);
 			const instance = new MapLibreMap({

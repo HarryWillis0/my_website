@@ -18,7 +18,7 @@ class MockMap {
 	remove = remove;
 }
 
-vi.mock('maplibre-gl', () => ({ Map: MockMap }));
+vi.mock('maplibre-gl', () => ({ Map: MockMap, setWorkerUrl: vi.fn() }));
 vi.mock('$app/environment', () => ({ browser: true }));
 
 // This fixture is hand-built, not derived from the real Fernie trip data —
