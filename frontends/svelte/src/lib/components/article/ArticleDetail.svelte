@@ -2,6 +2,7 @@
 	import { marked } from 'marked';
 	import type { IArticle } from '$lib/types';
 	import RouteMap from '$lib/components/route/RouteMap.svelte';
+	import Lightbox from './Lightbox.svelte';
 
 	let { article, viewCount }: { article: IArticle; viewCount: number } = $props();
 
@@ -16,8 +17,13 @@
 
 	const showUpdated = () => article.lastModifiedAt !== article.created;
 
-	const buildFigureHtml = (href: string, text: string) =>
-		`<figure class="prose-figure"><img src="${href}" alt="${text}"><figcaption>${text}</figcaption></figure>`;
+	let collectedImages: { src: string; alt: string }[] = [];
+
+	const buildFigureHtml = (href: string, text: string) => {
+		const index = collectedImages.length;
+		collectedImages.push({ src: href, alt: text });
+		return `<figure class="prose-figure"><img src="${href}" alt="${text}" data-index="${index}" tabindex="0" role="button"><figcaption>${text}</figcaption></figure>`;
+	};
 
 	marked.use({
 		renderer: {
@@ -33,7 +39,31 @@
 		}
 	});
 
-	const renderedBody = () => marked(article.body);
+	const rendered = $derived.by(() => {
+		collectedImages = [];
+		const html = marked(article.body);
+		return { html, images: collectedImages };
+	});
+
+	let openIndex = $state<number | null>(null);
+
+	const openFromElement = (target: HTMLElement) => {
+		const img = target.closest('img[data-index]');
+		if (!img) return;
+		openIndex = Number(img.getAttribute('data-index'));
+	};
+
+	const handleProseClick = (event: MouseEvent) => {
+		openFromElement(event.target as HTMLElement);
+	};
+
+	const handleProseKeydown = (event: KeyboardEvent) => {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		const target = event.target as HTMLElement;
+		if (!target.closest('img[data-index]')) return;
+		event.preventDefault();
+		openFromElement(target);
+	};
 </script>
 
 <!-- Header -->
@@ -56,7 +86,12 @@
 {/if}
 
 <!-- Body -->
-<div class="prose-custom">
+<!-- Click/key handling is delegated from here to the {@html} images below; onkeydown gives
+     keyboard parity, but no ARIA role describes this container's interactivity honestly. -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="prose-custom" onclick={handleProseClick} onkeydown={handleProseKeydown}>
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html renderedBody()}
+	{@html rendered.html}
 </div>
+
+<Lightbox images={rendered.images} bind:openIndex />
