@@ -17,11 +17,32 @@
 	const handleClose = () => {
 		openIndex = null;
 	};
+
+	const goToNext = () => {
+		if (openIndex === null) return;
+		openIndex = (openIndex + 1) % images.length;
+	};
+
+	const goToPrevious = () => {
+		if (openIndex === null) return;
+		openIndex = (openIndex - 1 + images.length) % images.length;
+	};
+
+	const handleKeydown = (event: KeyboardEvent) => {
+		if (event.key === 'ArrowRight') goToNext();
+		else if (event.key === 'ArrowLeft') goToPrevious();
+	};
 </script>
 
-<dialog bind:this={dialog} onclose={handleClose} class="lightbox-dialog">
+<dialog bind:this={dialog} onclose={handleClose} onkeydown={handleKeydown} class="lightbox-dialog">
 	{#if openIndex !== null}
 		<img src={images[openIndex].src} alt={images[openIndex].alt} />
+		<button type="button" class="lightbox-prev" onclick={goToPrevious} aria-label="Previous image"
+			>‹</button
+		>
+		<button type="button" class="lightbox-next" onclick={goToNext} aria-label="Next image">›</button
+		>
+		<p class="lightbox-counter">{openIndex + 1} / {images.length}</p>
 	{/if}
 </dialog>
 
@@ -42,5 +63,39 @@
 		display: block;
 		max-width: 90vw;
 		max-height: 90vh;
+	}
+
+	.lightbox-prev,
+	.lightbox-next {
+		position: fixed;
+		top: 50%;
+		transform: translateY(-50%);
+		background: rgb(0 0 0 / 0.5);
+		color: white;
+		border: none;
+		border-radius: 9999px;
+		width: 2.5rem;
+		height: 2.5rem;
+		font-size: 1.5rem;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.lightbox-prev {
+		left: 1rem;
+	}
+
+	.lightbox-next {
+		right: 1rem;
+	}
+
+	.lightbox-counter {
+		position: fixed;
+		bottom: 1rem;
+		left: 50%;
+		transform: translateX(-50%);
+		color: white;
+		font-size: 0.875rem;
+		letter-spacing: 0.05em;
 	}
 </style>
