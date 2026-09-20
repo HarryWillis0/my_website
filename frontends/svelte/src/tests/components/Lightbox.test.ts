@@ -96,4 +96,33 @@ describe('Lightbox', () => {
 
 		expect(screen.getByText('1 / 3')).toBeInTheDocument();
 	});
+
+	it('shows the image alt text as a caption', () => {
+		render(Lightbox, { props: { images, openIndex: 0 } });
+		expect(screen.getByText('Image A')).toBeInTheDocument();
+	});
+
+	it('closes the lightbox when the close button is clicked', async () => {
+		const { container } = render(Lightbox, { props: { images, openIndex: 0 } });
+
+		await fireEvent.click(screen.getByRole('button', { name: /close/i }));
+
+		expect(container.querySelector('dialog')?.open).toBe(false);
+	});
+
+	it('closes the lightbox when the backdrop is clicked', async () => {
+		const { container } = render(Lightbox, { props: { images, openIndex: 0 } });
+
+		await fireEvent.click(container.querySelector('dialog')!);
+
+		expect(container.querySelector('dialog')?.open).toBe(false);
+	});
+
+	it('does not close the lightbox when the image itself is clicked', async () => {
+		const { container } = render(Lightbox, { props: { images, openIndex: 0 } });
+
+		await fireEvent.click(screen.getByRole('img'));
+
+		expect(container.querySelector('dialog')?.open).toBe(true);
+	});
 });
