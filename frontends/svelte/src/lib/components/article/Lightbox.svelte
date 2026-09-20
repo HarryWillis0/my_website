@@ -6,6 +6,14 @@
 
 	let dialog: HTMLDialogElement;
 
+	// Keeps the last-open image rendered while the dialog plays its close
+	// transition, since openIndex (and the {#if}) go null immediately on close.
+	let shownIndex = $state<number | null>(null);
+
+	$effect(() => {
+		if (openIndex !== null) shownIndex = openIndex;
+	});
+
 	$effect(() => {
 		if (openIndex !== null && !dialog.open) {
 			dialog.showModal();
@@ -45,103 +53,139 @@
 	onclose={handleClose}
 	onkeydown={handleKeydown}
 	onclick={handleBackdropClick}
-	class="lightbox-dialog"
+	class="lightbox-dialog m-auto max-h-[92vh] max-w-[92vw] border-none bg-transparent p-0 sm:px-14"
 >
-	{#if openIndex !== null}
-		<button type="button" class="close-button" onclick={handleClose} aria-label="Close">
-			&times;
-		</button>
-		<img src={images[openIndex].src} alt={images[openIndex].alt} />
-		<button type="button" class="lightbox-prev" onclick={goToPrevious} aria-label="Previous image"
-			>‹</button
-		>
-		<button type="button" class="lightbox-next" onclick={goToNext} aria-label="Next image">›</button
-		>
-		<p class="lightbox-counter">{openIndex + 1} / {images.length}</p>
-		<p class="caption">{images[openIndex].alt}</p>
+	{#if shownIndex !== null}
+		<div class="relative flex flex-col items-center rounded-2xl bg-white p-3 shadow-2xl">
+			<button
+				type="button"
+				class="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-colors hover:text-gray-900"
+				onclick={handleClose}
+				aria-label="Close"
+			>
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<line x1="18" y1="6" x2="6" y2="18" />
+					<line x1="6" y1="6" x2="18" y2="18" />
+				</svg>
+			</button>
+
+			<img
+				src={images[shownIndex].src}
+				alt={images[shownIndex].alt}
+				class="block max-h-[70vh] max-w-[80vw] rounded-lg object-contain"
+			/>
+
+			<div class="mt-3 max-w-[80vw] text-center">
+				<p class="font-serif text-xs text-gray-400 italic">{images[shownIndex].alt}</p>
+				{#if images.length > 1}
+					<p class="mt-1 text-xs tracking-widest text-gray-300 uppercase">
+						{shownIndex + 1} / {images.length}
+					</p>
+				{/if}
+			</div>
+		</div>
+
+		{#if images.length > 1}
+			<!-- Positioned relative to the dialog itself, not the card: a modal
+			     dialog clips content to its own box even with overflow: visible,
+			     so these can't be nudged outside the card via negative offsets.
+			     The dialog's sm:px-14 gives them room to sit clear of the card
+			     on wider screens; on mobile they land near the card's edge. -->
+			<button
+				type="button"
+				class="absolute top-1/2 left-2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-colors hover:text-gray-900"
+				onclick={goToPrevious}
+				aria-label="Previous image"
+			>
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<polyline points="15 18 9 12 15 6" />
+				</svg>
+			</button>
+			<button
+				type="button"
+				class="absolute top-1/2 right-2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-colors hover:text-gray-900"
+				onclick={goToNext}
+				aria-label="Next image"
+			>
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<polyline points="9 18 15 12 9 6" />
+				</svg>
+			</button>
+		{/if}
 	{/if}
 </dialog>
 
 <style>
+	/* Everything here is the open/close animation mechanism (::backdrop and
+	   @starting-style aren't reachable as clean Tailwind utilities); all
+	   other styling lives in the markup above. */
 	.lightbox-dialog {
-		position: relative;
-		max-width: 90vw;
-		max-height: 90vh;
-		border: none;
-		padding: 0;
-		background: transparent;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+		opacity: 0;
+		transform: scale(0.96);
+		transition:
+			opacity 200ms ease,
+			transform 200ms ease,
+			overlay 200ms ease allow-discrete,
+			display 200ms ease allow-discrete;
+	}
+
+	.lightbox-dialog[open] {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	@starting-style {
+		.lightbox-dialog[open] {
+			opacity: 0;
+			transform: scale(0.96);
+		}
 	}
 
 	.lightbox-dialog::backdrop {
-		background: rgb(0 0 0 / 0.85);
+		background: rgb(255 255 255 / 55%);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		opacity: 0;
+		transition:
+			opacity 200ms ease,
+			overlay 200ms ease allow-discrete,
+			display 200ms ease allow-discrete;
 	}
 
-	.lightbox-dialog img {
-		display: block;
-		max-width: 90vw;
-		max-height: 75vh;
-		object-fit: contain;
+	.lightbox-dialog[open]::backdrop {
+		opacity: 1;
 	}
 
-	.close-button {
-		position: absolute;
-		top: 0.5rem;
-		right: 0.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		border: none;
-		border-radius: 50%;
-		background: rgb(0 0 0 / 0.5);
-		color: white;
-		font-size: 1.5rem;
-		line-height: 1;
-		cursor: pointer;
-	}
-
-	.caption {
-		margin: 0.75rem 0 0;
-		padding: 0 1rem;
-		color: white;
-		text-align: center;
-	}
-
-	.lightbox-prev,
-	.lightbox-next {
-		position: fixed;
-		top: 50%;
-		transform: translateY(-50%);
-		background: rgb(0 0 0 / 0.5);
-		color: white;
-		border: none;
-		border-radius: 9999px;
-		width: 2.5rem;
-		height: 2.5rem;
-		font-size: 1.5rem;
-		line-height: 1;
-		cursor: pointer;
-	}
-
-	.lightbox-prev {
-		left: 1rem;
-	}
-
-	.lightbox-next {
-		right: 1rem;
-	}
-
-	.lightbox-counter {
-		position: fixed;
-		bottom: 1rem;
-		left: 50%;
-		transform: translateX(-50%);
-		color: white;
-		font-size: 0.875rem;
-		letter-spacing: 0.05em;
+	@starting-style {
+		.lightbox-dialog[open]::backdrop {
+			opacity: 0;
+		}
 	}
 </style>
