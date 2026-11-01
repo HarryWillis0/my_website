@@ -1,8 +1,6 @@
 name: 'Build and Deploy'
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
 
 jobs:
   build-and-deploy:
@@ -27,14 +25,6 @@ jobs:
       - name: 'Set frontend path (Svelte)'
         if: vars.DIST_FRONTEND == 'svelte'
         run: echo "FRONTEND_PATH=frontends/svelte" >> $GITHUB_ENV
-
-      - name: 'Install dependencies'
-        run: npm ci
-        working-directory: ./${{ env.FRONTEND_PATH }}
-
-      - name: 'Run tests'
-        run: npm test
-        working-directory: ./${{ env.FRONTEND_PATH }}
 
       - name: 'Authenticate to Google Cloud'
         id: auth

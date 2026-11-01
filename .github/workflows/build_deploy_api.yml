@@ -1,8 +1,6 @@
 name: 'Build and Deploy API'
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
 
 jobs:
   build-and-deploy:
@@ -22,33 +20,6 @@ jobs:
       - name: 'Set backend path (Node)'
         if: vars.DIST_BACKEND == 'node'
         run: echo "BACKEND_PATH=backends/servers/node" >> $GITHUB_ENV
-
-      - name: 'Setup Go'
-        if: vars.DIST_BACKEND == 'go'
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'backends/apis/go/go.mod'
-
-      - name: 'Run tests (Go)'
-        if: vars.DIST_BACKEND == 'go'
-        run: go test ./...
-        working-directory: ./backends/apis/go
-
-      - name: 'Setup Node.js'
-        if: vars.DIST_BACKEND == 'node'
-        uses: actions/setup-node@v2
-        with:
-          node-version: '22'
-
-      - name: 'Install dependencies (Node)'
-        if: vars.DIST_BACKEND == 'node'
-        run: npm ci
-        working-directory: ./backends/servers/node
-
-      - name: 'Run tests (Node)'
-        if: vars.DIST_BACKEND == 'node'
-        run: npm test
-        working-directory: ./backends/servers/node
 
       - name: 'Authenticate to Google Cloud'
         id: auth
