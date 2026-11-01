@@ -1,0 +1,113 @@
+name: 'CI'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# Steps (not jobs) are conditional so a skipped variant still counts as success for `needs`.
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repo'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Node.js (Svelte)'
+        if: vars.DIST_FRONTEND == 'svelte'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontends/svelte/package-lock.json
+
+      - name: 'Install dependencies (Svelte)'
+        if: vars.DIST_FRONTEND == 'svelte'
+        run: npm ci
+        working-directory: ./frontends/svelte
+
+      - name: 'Type-check (Svelte)'
+        if: vars.DIST_FRONTEND == 'svelte'
+        run: npm run check
+        working-directory: ./frontends/svelte
+
+      - name: 'Lint (Svelte)'
+        if: vars.DIST_FRONTEND == 'svelte'
+        run: npm run lint
+        working-directory: ./frontends/svelte
+
+      - name: 'Run tests (Svelte)'
+        if: vars.DIST_FRONTEND == 'svelte'
+        run: npm test
+        working-directory: ./frontends/svelte
+
+      - name: 'Setup Node.js (React)'
+        if: vars.DIST_FRONTEND == 'react'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontends/react/package-lock.json
+
+      - name: 'Install dependencies (React)'
+        if: vars.DIST_FRONTEND == 'react'
+        run: npm ci
+        working-directory: ./frontends/react
+
+      - name: 'Run tests (React)'
+        if: vars.DIST_FRONTEND == 'react'
+        run: npm test
+        working-directory: ./frontends/react
+
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repo'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Go'
+        if: vars.DIST_BACKEND == 'go'
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'backends/apis/go/go.mod'
+
+      - name: 'Run tests (Go)'
+        if: vars.DIST_BACKEND == 'go'
+        run: go test ./...
+        working-directory: ./backends/apis/go
+
+      - name: 'Setup Node.js (Node)'
+        if: vars.DIST_BACKEND == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backends/servers/node/package-lock.json
+
+      - name: 'Install dependencies (Node)'
+        if: vars.DIST_BACKEND == 'node'
+        run: npm ci
+        working-directory: ./backends/servers/node
+
+      - name: 'Run tests (Node)'
+        if: vars.DIST_BACKEND == 'node'
+        run: npm test
+        working-directory: ./backends/servers/node
+
+  deploy-frontend:
+    needs: [frontend, api]
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build_deploy.yml
+    secrets: inherit
+
+  deploy-api:
+    needs: [frontend, api]
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/build_deploy_api.yml
+    secrets: inherit
