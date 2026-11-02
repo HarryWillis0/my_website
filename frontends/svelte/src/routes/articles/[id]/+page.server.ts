@@ -3,15 +3,17 @@ import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { ApiArticleService } from '$lib/services/ApiArticleService';
 import type { IArticle } from '$lib/types/article';
+import { requireApiUrl } from '$lib/utils/requireApiUrl';
 
 export const load: PageServerLoad<{ article: IArticle | null; viewCount: number }> = async ({
 	params
 }) => {
 	try {
-		const articleService = new ApiArticleService(env.API_URL);
+		const apiUrl = requireApiUrl(env.API_URL);
+		const articleService = new ApiArticleService(apiUrl);
 		const [article, viewCountRes] = await Promise.all([
 			articleService.getArticleById(params.id),
-			fetch(`${env.API_URL}/articles/${params.id}/views`)
+			fetch(`${apiUrl}/articles/${params.id}/views`)
 		]);
 
 		if (!viewCountRes.ok) {
