@@ -5,7 +5,7 @@ on:
       - main
   pull_request:
 
-# Steps (not jobs) are conditional so a skipped variant still counts as success for `needs`.
+# Steps (not jobs) are conditional so a skipped variant still counts as success; deploys start from this workflow's completion.
 jobs:
   frontend:
     runs-on: ubuntu-latest
@@ -93,21 +93,3 @@ jobs:
         if: vars.DIST_BACKEND == 'node'
         run: npm test
         working-directory: ./backends/servers/node
-
-  deploy-frontend:
-    needs: [frontend, api]
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      id-token: write
-      contents: read
-    uses: ./.github/workflows/build_deploy.yml
-    secrets: inherit
-
-  deploy-api:
-    needs: [frontend, api]
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      id-token: write
-      contents: read
-    uses: ./.github/workflows/build_deploy_api.yml
-    secrets: inherit
