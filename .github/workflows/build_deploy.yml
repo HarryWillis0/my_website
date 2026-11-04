@@ -1,9 +1,13 @@
 name: 'Build and Deploy'
 on:
-  workflow_call:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
 
 jobs:
   build-and-deploy:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
     permissions:
       id-token: write
       contents: read
@@ -12,6 +16,8 @@ jobs:
     steps:
       - name: 'Checkout Repo'
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: 'Setup Node.js'
         uses: actions/setup-node@v2
@@ -47,12 +53,12 @@ jobs:
           context: './${{ env.FRONTEND_PATH }}'
           push: true
           tags: |
-            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}
+            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.event.workflow_run.head_sha }}
 
       - name: 'Deploy to Cloud Run'
         uses: google-github-actions/deploy-cloudrun@v0
         with:
           service: ${{ vars.SERVICE_NAME }}
           region: ${{ vars.ARTIFACT_REGISTRY_REGION }}
-          image: ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.sha }}
+          image: ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REGISTRY }}/${{ vars.SERVICE_NAME }}:${{ github.event.workflow_run.head_sha }}
           env_vars: API_URL=${{ vars.API_URL }}
