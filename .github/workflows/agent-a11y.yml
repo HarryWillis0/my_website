@@ -60,10 +60,10 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ steps.app-token.outputs.token }}
           prompt: |
-            Use the a11y-audit skill to audit the files changed in this merge (commit ${{ github.sha }}).
+            Read .claude/skills/a11y-audit/SKILL.md and follow it to audit the files changed in this merge (commit ${{ github.sha }}).
             Changed files under frontends/:
             ${{ steps.changed.outputs.files }}
           claude_args: >-
             --model claude-sonnet-5-5
             --max-turns 30
-            --allowedTools "Read,Grep,Glob,Skill,Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh label list:*),Bash(gh label create:*)"
+            --allowedTools "Read,Grep,Glob,Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh label list:*),Bash(gh label create:*)"
