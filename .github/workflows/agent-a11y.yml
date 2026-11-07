@@ -6,7 +6,7 @@ on:
     paths:
       - 'frontends/**'
 
-# Detect-only: audits the files changed in the merge and files deduped `accessibility` issues.
+# detect audits the merge and files deduped `accessibility` issues; fix then resolves up to 5 of them directly on main.
 jobs:
   detect:
     # Kill switch + loop guard on the commit marker; the app-bot actor check runs as a step once its slug is known.
@@ -15,6 +15,8 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
+    outputs:
+      filed: ${{ steps.filed.outputs.count }}
     steps:
       - name: 'Mint GitHub App token'
         id: app-token
@@ -51,6 +53,13 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
+      - name: 'Record highest issue number'
+        id: before
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: echo "max=$(gh issue list --state all --limit 1 --json number --jq '.[0].number // 0')" >> "$GITHUB_OUTPUT"
+
       - name: 'Audit changed files'
         if: steps.guard.outputs.skip != 'true'
         uses: anthropics/claude-code-action@v1
@@ -67,3 +76,73 @@ jobs:
             --model claude-sonnet-5-5
             --max-turns 30
             --allowedTools "Read,Grep,Glob,Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh label list:*),Bash(gh label create:*)"
+
+      - name: 'Count issues filed'
+        id: filed
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          MAX: ${{ steps.before.outputs.max }}
+        run: |
+          count=$(gh issue list --label accessibility --state open --limit 200 --json number --jq "[.[] | select(.number > $MAX)] | length")
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+  fix:
+    needs: detect
+    if: needs.detect.outputs.filed != '' && needs.detect.outputs.filed != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: 'Mint GitHub App token'
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      # The app token is used for checkout so the later push triggers CI (GITHUB_TOKEN pushes do not).
+      - name: 'Checkout Repo'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: 'Configure git identity'
+        env:
+          SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          git config user.name "$SLUG[bot]"
+          git config user.email "$SLUG[bot]@users.noreply.github.com"
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontends/svelte/package-lock.json
+
+      - name: 'Install dependencies'
+        run: npm ci
+        working-directory: ./frontends/svelte
+
+      - name: 'Fix accessibility issues'
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ steps.app-token.outputs.token }}
+          prompt: |
+            Read .claude/skills/implement-a11y/SKILL.md and follow it. Fix at most 5 open accessibility issues.
+          claude_args: >-
+            --model claude-sonnet-5-5
+            --max-turns 80
+            --allowedTools "Read,Edit,Write,Grep,Glob,Bash(gh issue list:*),Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh label list:*),Bash(gh label create:*),Bash(npm run format:*),Bash(npm run check:*),Bash(npm run lint:*),Bash(npm test:*),Bash(npx vitest:*),Bash(git add:*),Bash(git commit:*),Bash(git status:*),Bash(git diff:*),Bash(git checkout:*),Bash(git clean:*)"
+
+      - name: 'Push fixes to main'
+        run: |
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
